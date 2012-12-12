@@ -37,7 +37,15 @@ Currently this tool has only been tested with Clojure 1.4 and leiningen 2
 You will require leiningen in order to use this plugin, you'll need
 to add it to the plugin list of your project
 
-{% gist 4165781 %}
+    (defproject some-project
+
+    ;; ...
+
+    :plugins [[com.birdseye-sw/lein-dalap "0.1.0"]]
+
+    ;;...
+
+    )
 
 ## Executing lein-dalap transformation command
 
@@ -55,7 +63,27 @@ lein-dalap will expect you to specify every Clojure source file that
 you would like to transform to Clojurescript, you'll use the
 `dalap_rules.clj` for that.
 
-{% gist 4165851 %}
+    {
+
+      ["src/clj/util.clj" "src/cljs/util.clj"]
+
+      ;; ^ this is the file-spec
+
+      ;; bellow are the transformation rules that will work _only_ on util.clj
+
+      [
+
+      ;; rule 1
+
+      JavaClass js_class ;; replace all the JavaClass symbols with js_class on cljs
+
+      ;; rule 2
+
+      .findRegexp .findRgxp ;; replace all the .findRegexp invocations to .findRgxp
+
+      ]
+
+    }
 
 This is a file that needs to be in the root of your project (where
 your project.clj is). In here you'll specify a map of file specs with
@@ -164,4 +192,4 @@ it to generate HTML templates using the same rule transformation system
 we use in lein-dalap.
 
 [cljsbuild_crossovers]: https://github.com/emezeske/lein-cljsbuild/blob/0.2.9/doc/CROSSOVERS.md
-[dalap_url]: https://github.com/van-clj/dalap
+[dalap_url]: https://github.com/BirdseyeSoftware/dalap
