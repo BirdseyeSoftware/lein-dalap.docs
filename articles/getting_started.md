@@ -3,41 +3,26 @@ title: "lein-dalap | Getting Started"
 layout: article
 ---
 
-## About this guide
-
-This guide explains how to setup `lein-dalap` in your leiningen project,
-specificaly:
-
-* How to specify which files would you like to be translated to
-  clojurescript in your project.
-
-* How to use the default transformation rules that come with lein-dalap
-
-* How to define your own transformation rules for each file you want to
-  transform to clojurescript
-
-* How to integrate easily with lein-cljsbuild
-
-## What version of lein-dalap this guide covers?
-
-This guide covers lein-dalap version {{site.package_version}}
-
 ## Overview
 
-lein-dalap is an _easy to use_ source code transformation tool. It's
-main purpose is to allow the programmer to share the same code base
-for both Clojure and Clojurescript without to much of a hassle.
+lein-dalap is a source code transformation tool that facilitates the
+creation and maintenance of libraries that work in Clojure *and*
+Clojurescript.
 
-lein-dalap allows you to author code that works in both the JVM and in
+lein-dalap allows you to maintain code that works in both the JVM and in
 the browser, without forking your code and without relying on
 [cljsbuild crossovers][cljsbuild_crossovers].
 
 lein-dalap is inspired by [cljx](https://github.com/lynaghk/cljx), a
-leiningen plugin that transforms input source files with a .cljx
-extension and special meta-data markup into .clj and .cljs output. In
-contrast with cljx, lein-dalap's input files are plain .clj files and
-only the .cljs files are auto-generated. It is also simpler to specify
+leiningen plugin that transforms input source files with a `.cljx`
+extension and special meta-data markup into `.clj` and `.cljs` output. In
+contrast with cljx, lein-dalap's input files are plain `.clj` files and
+only the `.cljs` files are auto-generated. It is also simpler to specify
 custom transformation rules at the project level.
+
+## What version of lein-dalap does this guide cover?
+
+This guide covers lein-dalap version {{site.package_version}}
 
 ## Supported Clojure Versions
 
@@ -60,8 +45,8 @@ to add it to the plugin list of your project
 
 ## Executing lein-dalap transformation command
 
-lein-dalap offers a similar interface to lein-cljsbuild, there are
-three important sub-task you should be aware of:
+lein-dalap offers a similar interface to lein-cljsbuild. There are
+three main sub-tasks:
 
 * `lein dalap auto` transforms your clj files to cljs files as
    soon as it detects a change in one of them
@@ -70,59 +55,61 @@ three important sub-task you should be aware of:
 
 ## Specifying which files you want to transform to cljs
 
-lein-dalap will expect you to specify every Clojure source file that
-you would like to transform to Clojurescript, you'll use the
-`dalap_rules.clj` for that.
+lein-dalap expects you to specify every Clojure source file that you
+would like to transform to Clojurescript in a top-level file named
+`dalap_rules.clj`.
+
+This file needs to be in the root of your project (where your
+project.clj is). Specify a map of file specs (the keys) and the
+transformation rules to use (the values of the map). A file spec is a
+2 element vector of `[input-path output-path]`. Transformation rules
+are *css-like* selector+transformer pairs and are interpreted using
+[dalap](https://github.com/BirdseyeSoftware/dalap). Specify them in a
+vector of pairs. Leave the vector empty if you only need the default
+lein-dalap rules.
 
     {
-
       ["src/clj/util.clj" "src/cljs/util.clj"]
+      ;; ^ the file-spec [source-clj-file target-cljs-file]
 
-      ;; ^ this is the file-spec
-
-      ;; bellow are the transformation rules that will work _only_ on util.clj
-
+      ;; followed by the transformation rules for util.clj:
       [
+      ;; Rule 1
+      JavaClass 
+      js_class ;; replace all the JavaClass symbols with js_class on cljs
 
-      ;; rule 1
-
-      JavaClass js_class ;; replace all the JavaClass symbols with js_class on cljs
-
-      ;; rule 2
-
-      .findRegexp .findRgxp ;; replace all the .findRegexp invocations to .findRgxp
-
+      ;; Rule 2
+      ;; You may also use functions as selectors and transformers.
+      ;; Wrap selector functions in `dalap/when' and transformer
+      ;; functions in `dalap/transform'. The following is a default rule:
+      (dalap/when (has-meta? :cljs)) 
+      (dalap/transform (replace-with-meta :cljs))
+      ;;
+      ;; from clojure:
+      ;; (^{:cljs '-invoke} invoke [args] ...)
+      ;; To clojurescript:
+      ;; (-invoke [args] ...)
       ]
-
     }
 
-This is a file that needs to be in the root of your project (where
-your project.clj is). In here you'll specify a map of file specs with
-its specific transformation rules, a file spec is a tuple of
-`[input-path output-path]`, and the transformation rules are contained
-in a vector of keys and values separated by spaces.
+Add a file-spec for each of the files you want to transform to
+cljs.
 
-You will need to specify a file-spec for each of the files you want to
-transform to cljs, you may leave the transformation rules empty, given
-that lein-dalap already offers some by default.
-
-## Transformation rules _baked-in_ in lein-dalap
+## Default Transformation Rules
 
 ### JVM Types to Javascript Types
 
-By default lein-dalap offers transformation of some Clojure core
-symbols to Clojurescript's, starting with basic Java types like
-String, Integer, Long, etc. They all would be replaced by the
-equivalent Javascript type.
+By default, lein-dalap transforms some core Clojure/Java type
+symbols to their JS equivalents. For example
 
     (extend-protocol IMyProtocol
-      String
+      java.lang.String
       (my-fn [s] ...)
 
-      Object
+      java.lang.Object
       (my-fn [s] ...)
 
-This would get translated to the following Clojurescript snippet
+becomes the following Clojurescript
 
     (extend-protocol IMyProtocol
       string
@@ -131,12 +118,13 @@ This would get translated to the following Clojurescript snippet
       default
       (my-fn [s] ...))
 
+See [rules.clj](https://github.com/BirdseyeSoftware/lein-dalap/blob/master/src/dalap/leiningen/rules.clj#L46) in the source for all the defaults.  Please note, the default JVM types specified in `rules.clj` will only be transformed if they are fully qualified symbols: `java.lang.Object` not `Object`.
+
 ### The :cljs meta tag
 
-You may replace an specific form in your Clojure file with one that
-would make more sense in Clojurescript by using the `:cljs` key on the
-form meta. This allows you to specify to different snippets of code in
-valid Clojure syntax.
+If you want to replace any form in your Clojure source with an
+alternate Clojurescript form, mark the form with `:cljs` meta tag
+containing the *quoted* replacement form. For example
 
     ^{:cljs
       '(ns project.test.util-tests
@@ -146,21 +134,17 @@ valid Clojure syntax.
        (:require [buster-cljs.clojure :refer [deftest describe it is]
                  [project.util :as utils])
 
-This will use the form specified on the `:cljs` meta key when transforming
-from Clojure to Clojurescript, while keeping valid Clojure code.
-
 ### The :clj meta tag
 
-You may remove completely a form from the Clojurescript output file by
-adding a `^:clj` meta tag
+To completely remove a form in the Clojurescript output, mark it with 
+the `^:clj` meta tag.
 
     (defn my-fn []
       ^:clj
       (println "hello world")
       ...)
 
-The `(println "hello world")` form will not be on the Clojurescript
-output after transformation.
+The `(println "hello world")` will be dropped in the Clojurescript output.
 
 ### The ignore reader macro with :cljs at the start
 
@@ -169,7 +153,8 @@ keeping it a valid Clojure form by using the `#_(:cljs form)` syntax
 
     #_(:cljs (initialize-buster))
 
-This will be replaced with the following on the Clojurescript output file
+The Clojure reader will drop it and it will translated into the
+following Clojurescript
 
     (do
       (initialize-buster))
@@ -198,9 +183,9 @@ with lein-dalap, let's review what we just learned:
 
 ## What to read next
 
-You may want to check out the [dalap][dalap_url] project in general, and how to use
-it to generate HTML templates using the same rule transformation system
-we use in lein-dalap.
+You may want to check out the [dalap][dalap_url] project. It is also
+being used to generate HTML from Clojure forms with the same
+*css-like* rule transformation system in lein-dalap.
 
 [cljsbuild_crossovers]: https://github.com/emezeske/lein-cljsbuild/blob/0.2.9/doc/CROSSOVERS.md
 [dalap_url]: https://github.com/BirdseyeSoftware/dalap

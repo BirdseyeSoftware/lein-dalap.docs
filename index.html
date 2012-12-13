@@ -5,11 +5,11 @@ layout: default
 <div class='headline'>
   <div class='logo'>
     <h1>lein-dalap</h1>
+    <div class="subtitle">
+      Leiningen plugin to transform Clojure modules -&gt; Clojurescript.
+    </div>
   </div>
   <div class='clear' style=''></div>
-  <p style=''>
-   Clojure to Clojurescript transformer.
-  </p>
   <a class='btn btn-primary btn-large' href='{{site.baseurl}}/articles/getting_started.html'>Get Started! »</a>
   <!--
   <a class="btn btn-large" href="{{site.baseurl}}/articles/guides.html">Read doc guides »</a>
@@ -20,21 +20,20 @@ layout: default
 <div class='row-fluid'>
   <div class='span4'>
     <h2>Same Codebase</h2>
-    <p>No need to fork your Clojure project in order to make it
-    Clojurescript compatible. Use the same codebase for both versions
-    of your project.</p>
+    <p>With lein-dalap you don't need to fork your Clojure project in
+    order to make it Clojurescript compatible. Use the same source
+    files to target both the JVM and JS.</p>
   </div>
   <div class='span4'>
-    <h2>Uses Clojure Reader</h2>
-    <p>By using the powerful Clojure reader, we transform your source
-    code reliably; you just need to add a few meta tags, specify some
-    <em>CSS-like</em> rules and lein-dalap will do the rest.</p>
+    <h2>Valid Clojure By Default</h2>
+    <p>Starting with working Clojure source files, lein-dalap walks
+    your code and translates the JVM platform specific bits into the
+    equivalent Clojurescript. You just need to add a few meta tags
+    and, optionally, specify some <em>CSS-like</em> rules.</p>
   </div>
   <div class='span4'>
-    <h2>Sane Defaults</h2>
-    <p>lein-dalap offers out of the box rule transformations that you
-    are likely going to use in your code, replacing Java common types
-    with javascript ones, general clojure to cljs namespace
-    transformations, etc.</p>
+    <h2>Simple, Extensible</h2>
+    <p>lein-dalap has sane defaults and provides a simple mechanism to
+    target particular Clj forms / types and transform them as you need.</p>
   </div>
 </div>
