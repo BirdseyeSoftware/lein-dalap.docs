@@ -129,7 +129,7 @@ containing the *quoted* replacement form. For example
     ^{:cljs
       '(ns project.test.util-tests
         (:require [project.util :as utils])
-        (:require-macros buster-cljs.macros :refer [deftest describe it is]))
+        (:require-macros [buster-cljs.macros :refer [deftest describe it is]]))
     (ns project.test.util-tests
        (:require [buster-cljs.clojure :refer [deftest describe it is]
                  [project.util :as utils])
