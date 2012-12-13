@@ -26,10 +26,18 @@ This guide covers lein-dalap version {{site.package_version}}
 
 lein-dalap is an _easy to use_ source code transformation tool. It's
 main purpose is to allow the programmer to share the same code base
-for both Clojure and Clojurescript without to much of a hassle. It
-also offers a way to extend the transformation parser by adding custom
-rules that adapt to the specific needs of your project. You may see it
-as a replacement for [lein-cljsbuild's crossovers][cljsbuild_crossovers].
+for both Clojure and Clojurescript without to much of a hassle.
+
+lein-dalap allows you to author code that works in both the JVM and in
+the browser, without forking your code and without relying on
+[cljsbuild crossovers][cljsbuild_crossovers].
+
+lein-dalap is inspired by [cljx](https://github.com/lynaghk/cljx), a
+leiningen plugin that transforms input source files with a .cljx
+extension and special meta-data markup into .clj and .cljs output. In
+contrast with cljx, lein-dalap's input files are plain .clj files and
+only the .cljs files are auto-generated. It is also simpler to specify
+custom transformation rules at the project level.
 
 ## Supported Clojure Versions
 
