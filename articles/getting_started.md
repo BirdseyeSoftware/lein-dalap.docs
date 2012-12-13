@@ -1,23 +1,26 @@
 ---
-title: "Getting Started with lein-dalap"
+title: "lein-dalap | Getting Started"
 layout: article
 ---
 
 ## About this guide
 
-This guide explains how to setup lein-dalap in your leiningen project,
+This guide explains how to setup `lein-dalap` in your leiningen project,
 specificaly:
 
 * How to specify which files would you like to be translated to
   clojurescript in your project.
+
 * How to use the default transformation rules that come with lein-dalap
+
 * How to define your own transformation rules for each file you want to
   transform to clojurescript
+
 * How to integrate easily with lein-cljsbuild
 
 ## What version of lein-dalap this guide covers?
 
-This guide covers lein-dalap version 0.1.0
+This guide covers lein-dalap version {{site.package_version}}
 
 ## Overview
 
