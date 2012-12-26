@@ -1,7 +1,7 @@
 source:      .
 destination: ./_site
 plugins:     ./_plugins
-baseurl:     /lein-dalap.docs
+baseurl:     /lein-dalap.docs/
 package_version: "0.1.0"
 auto: true
 exclude: [bin, CNAME, Gemfile, Gemfile.lock, README.md]
